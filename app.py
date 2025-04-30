@@ -1,34 +1,35 @@
+# Keep imports and app setup as before
 import os
 import google.generativeai as genai
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 
-load_dotenv() # Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
-# Configure Gemini API
+# Configure Gemini API (keep this part)
 try:
     gemini_api_key = os.getenv("GEMINI_API_KEY")
     if not gemini_api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file")
     genai.configure(api_key=gemini_api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash') # Or choose another suitable model
+    model = genai.GenerativeModel('gemini-1.5-flash')
     print("Gemini API configured successfully.")
 except Exception as e:
     print(f"Error configuring Gemini API: {e}")
-    model = None # Set model to None if configuration fails
+    model = None
 
 # --- Routes ---
 
 @app.route('/')
 def index():
-    """Serves the main HTML page."""
     return render_template('index.html')
 
+# --- UPDATED explain_topic FUNCTION ---
 @app.route('/explain', methods=['POST'])
 def explain_topic():
-    """Handles the explanation request from the frontend."""
+    """Handles the explanation request from the frontend using the PAMT persona and analogy focus."""
     if not model:
          return jsonify({"error": "Gemini API not configured properly. Check server logs."}), 500
 
@@ -37,61 +38,73 @@ def explain_topic():
         if not data:
             return jsonify({"error": "Invalid request data"}), 400
 
-        abilities = data.get('abilities', '')
-        likes = data.get('likes', '')
+        # We'll primarily use 'likes' for the interests as per the new prompt's focus
+        # 'abilities' is received but not directly used in this specific prompt structure
+        # You could potentially add a sentence to the prompt referencing abilities if needed later.
+        abilities = data.get('abilities', '') # Still capture it if sent
+        likes = data.get('likes', '') # This maps to "User's Interests"
         topic = data.get('topic', '')
         language = data.get('language', 'English') # Default to English
 
         if not topic:
             return jsonify({"error": "Topic is required"}), 400
 
-        # --- Construct the Prompt for Gemini ---
+        # --- Construct the NEW Prompt using the PAMT structure ---
+        # Use the 'likes' field as the primary source for interests
+        interests_string = likes # Use the raw string from the textarea
+
         prompt = f"""
-        Explain the topic "{topic}" in detail, specifically for someone who has the following abilities or skills: "{abilities}" and likes the following things: "{likes}".
+        You are PAMT, an expert tutor specializing in personalized analogies and metaphors.
+        Your goal is to explain a complex topic using analogies drawn *specifically* from the user's stated interests.
 
-        Tailor the explanation style and examples to resonate with these abilities and interests. For instance, if they like 'building things' and are good at 'math', use construction or mathematical analogies. If they like 'storytelling' and are good at 'drawing', use narrative structures or visual examples.
+        User's Interests: {interests_string}
+        Complex Topic to Explain: {topic}
 
-        Provide clear, step-by-step explanations where applicable.
-        Use relevant examples based on the provided abilities and likes.
-        Ensure the explanation is comprehensive and easy to understand for the target profile.
+        Instructions:
+        1. Prioritize analogies directly related to the provided interests.
+        2. If multiple interests are provided, try to weave them together or pick the most relevant one for the specific aspect of the topic you are explaining.
+        3. If the interests seem completely unrelated, acknowledge this difficulty but still attempt a creative connection, perhaps focusing on abstract concepts shared between the topic and the interest (e.g., rules in games vs. rules in physics, processes in cooking vs. processes in computing).
+        4. Keep the explanation clear, concise, and intuitive for someone familiar with the stated interests.
+        5. Avoid generic analogies that don't relate to the user's profile.
+        6. Structure the explanation logically. Start with a core analogy if possible.
+        7. Format the output using Markdown for better readability (e.g., use headings #, ##, lists *, -, bold **text**).
+        8. Respond ONLY in {language}. Do not include any introductory phrases like "Okay, here is the explanation..." or "Certainly, let's break down..." or similar conversational text before the actual explanation starts. Just provide the explanation directly.
 
-        Respond ONLY in {language}. Do not include any introductory phrases like "Okay, here is the explanation..." or similar conversational text before the actual explanation starts. Just provide the explanation directly.
-        Format the output using Markdown for better readability (e.g., use headings, lists, bold text).
+        Generate the explanation now:
         """
 
-        print(f"--- Sending Prompt to Gemini (Lang: {language}) ---")
-        # print(prompt) # Uncomment to debug the prompt
+        print(f"--- Sending PAMT Prompt to Gemini (Lang: {language}) ---")
+        # print(prompt) # Uncomment to debug the exact prompt being sent
 
         response = model.generate_content(prompt)
 
         # print("--- Received Response from Gemini ---") # Uncomment for debugging
         # print(response.text)
 
-        return jsonify({"explanation": response.text})
+        # Ensure the response content is accessed correctly
+        explanation_text = response.text
+
+        return jsonify({"explanation": explanation_text})
 
     except Exception as e:
         print(f"Error during Gemini generation: {e}")
-        # You might want to log the full error traceback here
+        # It's helpful to log the actual error type and traceback in real scenarios
+        # import traceback
+        # print(traceback.format_exc())
         return jsonify({"error": f"An error occurred while generating the explanation: {str(e)}"}), 500
 
-# --- PWA Routes ---
 
+# --- PWA Routes (Keep these as they are) ---
 @app.route('/manifest.json')
 def serve_manifest():
     return send_from_directory('static', 'manifest.json')
 
 @app.route('/service-worker.js')
 def serve_sw():
-    # Important: Serve with the correct MIME type
     response = send_from_directory('static/js', 'service-worker.js')
     response.headers['Content-Type'] = 'application/javascript'
     return response
 
-# --- Serve Static Files (CSS, JS, Images) ---
-# Flask automatically serves files from the 'static' folder at the /static URL path.
-# We already configured specific routes for manifest and sw for clarity and control.
-
+# --- Main execution (Keep as is) ---
 if __name__ == '__main__':
-    # Use 0.0.0.0 to be accessible on your network, useful for testing PWA on mobile
-    # Set debug=True for development (auto-reloads), False for production
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True) # Set debug=False for production
