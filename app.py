@@ -13,7 +13,7 @@ try:
     if not gemini_api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file")
     genai.configure(api_key=gemini_api_key)
-    model = genai.GenerativeModel('gemini-pro') # Or choose another suitable model
+    model = genai.GenerativeModel('gemini-1.5-flash') # Or choose another suitable model
     print("Gemini API configured successfully.")
 except Exception as e:
     print(f"Error configuring Gemini API: {e}")
