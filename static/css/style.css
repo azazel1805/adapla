@@ -1,24 +1,50 @@
+/* --- Dark Theme with Yellow/Red Accents --- */
+
+:root {
+    --bg-dark: #1a1a1a;         /* Main background */
+    --container-bg: #2a2a2a;   /* Slightly lighter container */
+    --input-bg: #333333;       /* Input field background */
+    --text-light: #e0e0e0;     /* Main text color */
+    --text-medium: #aaaaaa;    /* Subtler text / placeholders */
+    --text-dark: #1a1a1a;      /* Text on light/yellow backgrounds */
+    --border-color: #555555;   /* Borders */
+    --accent-yellow: #FFC107;  /* Primary Accent (Amber/Yellow) */
+    --accent-yellow-darker: #ffa000; /* Darker yellow for hover */
+    --accent-red: #D8000C;     /* Error Red */
+    --error-bg: #4f2a2a;       /* Darker background for error messages */
+    --explanation-bg: #3a3a3a; /* Background for the explanation box */
+    --code-bg: #222222;         /* Background for code blocks */
+}
+
 body {
     font-family: sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 20px;
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
 }
 
 .container {
     max-width: 800px;
     margin: 20px auto;
-    background-color: #fff;
+    background-color: var(--container-bg);
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Optional: subtle shadow for dark themes */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-h1, h2 {
-    color: #317EFB; /* PWA Theme Color */
+h1 {
+    color: var(--accent-yellow);
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    color: var(--text-light); /* Make secondary headings less prominent than h1 */
     margin-bottom: 1em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
 }
 
 .form-group {
@@ -29,7 +55,7 @@ label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #555;
+    color: var(--text-medium);
 }
 
 input[type="text"],
@@ -37,56 +63,90 @@ textarea,
 select {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-light);
     border-radius: 4px;
     box-sizing: border-box; /* Include padding in width */
     font-size: 1rem;
 }
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-medium);
+    opacity: 0.7; /* Make placeholder slightly less prominent */
+}
+
+/* Style for focused inputs */
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent-yellow);
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3); /* Subtle yellow glow */
+}
+
 
 textarea {
     resize: vertical; /* Allow vertical resizing */
 }
 
 button {
-    background-color: #317EFB;
-    color: white;
+    background-color: var(--accent-yellow);
+    color: var(--text-dark); /* Dark text on yellow for better contrast */
     padding: 12px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1.1rem;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 button:hover {
-    background-color: #1a5fba;
+    background-color: var(--accent-yellow-darker);
+    transform: translateY(-1px); /* Slight lift on hover */
+}
+
+button:active {
+     transform: translateY(0px); /* Press down effect */
 }
 
 button:disabled {
-    background-color: #cccccc;
+    background-color: var(--border-color);
+    color: var(--text-medium);
     cursor: not-allowed;
+     transform: none;
 }
 
 
 #explanation-output {
     margin-top: 30px;
     padding: 20px;
-    background-color: #e9f2ff;
-    border-left: 5px solid #317EFB;
+    background-color: var(--explanation-bg);
+    border-left: 5px solid var(--accent-yellow);
     border-radius: 4px;
-    white-space: pre-wrap; /* Preserve whitespace and line breaks from Markdown */
+    white-space: pre-wrap; /* Preserve whitespace and line breaks */
+    color: var(--text-light); /* Ensure text inside is light */
 }
 
+/* Markdown styling within explanation */
 #explanation-output h1,
 #explanation-output h2,
-#explanation-output h3 {
+#explanation-output h3,
+#explanation-output h4 {
     margin-top: 1.5em;
     margin-bottom: 0.5em;
-    color: #333; /* Override default blue for headings inside output */
+    color: var(--text-light); /* Headings inside explanation */
+    font-weight: bold;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid var(--border-color);
 }
-#explanation-output h1 { font-size: 1.8em; }
-#explanation-output h2 { font-size: 1.5em; }
+#explanation-output h1 { font-size: 1.6em; }
+#explanation-output h2 { font-size: 1.4em; }
 #explanation-output h3 { font-size: 1.2em; }
+#explanation-output h4 { font-size: 1.1em; }
+
 
 #explanation-output p {
     margin-bottom: 1em;
@@ -96,33 +156,61 @@ button:disabled {
 #explanation-output ol {
     margin-left: 20px;
     margin-bottom: 1em;
+    padding-left: 1em; /* Add padding for list items */
+}
+#explanation-output li {
+    margin-bottom: 0.5em;
 }
 
 #explanation-output code {
-    background-color: #eee;
-    padding: 2px 4px;
+    background-color: var(--code-bg);
+    color: var(--text-light);
+    padding: 3px 6px;
     border-radius: 3px;
     font-family: monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--border-color);
 }
 
 #explanation-output pre {
-    background-color: #eee;
-    padding: 10px;
+    background-color: var(--code-bg);
+    color: var(--text-light);
+    padding: 15px;
     border-radius: 4px;
     overflow-x: auto;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1em;
 }
+#explanation-output pre code {
+    background-color: transparent; /* Code inside pre shouldn't have its own bg */
+    padding: 0;
+    border: none;
+    font-size: 0.95em;
+}
+
 
 #explanation-output strong,
 #explanation-output b {
     font-weight: bold;
+    color: var(--accent-yellow); /* Highlight bold text */
 }
 
 #explanation-output em,
 #explanation-output i {
     font-style: italic;
+    color: #a8d8ff; /* Maybe a subtle light blue for italics? Or keep default */
+}
+
+#explanation-output a {
+    color: var(--accent-yellow);
+    text-decoration: none;
+}
+#explanation-output a:hover {
+    text-decoration: underline;
 }
 
 
+/* --- Utility Classes --- */
 .hidden {
     display: none;
 }
@@ -130,12 +218,12 @@ button:disabled {
 #loading {
     text-align: center;
     margin-top: 20px;
-    color: #555;
+    color: var(--text-medium);
 }
 
 .spinner {
-    border: 4px solid #f3f3f3; /* Light grey */
-    border-top: 4px solid #317EFB; /* Blue */
+    border: 4px solid var(--border-color); /* Darker base for spinner */
+    border-top: 4px solid var(--accent-yellow); /* Yellow accent */
     border-radius: 50%;
     width: 30px;
     height: 30px;
@@ -149,10 +237,10 @@ button:disabled {
 }
 
 .error {
-    color: #D8000C;
-    background-color: #FFD2D2;
-    border: 1px solid #D8000C;
-    padding: 10px;
+    color: #ffdddd; /* Lighter red text for dark background */
+    background-color: var(--error-bg);
+    border: 1px solid var(--accent-red);
+    padding: 10px 15px;
     margin-top: 20px;
     border-radius: 4px;
     text-align: center;
