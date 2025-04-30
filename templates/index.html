@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#317EFB"/> <!-- PWA Theme Color -->
+    <title>Personalized Learning Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <!-- Basic PWA Icons (replace with your actual icons) -->
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon-192.png') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Personalized Learning Assistant</h1>
+        <p>Get topics explained based on your skills and interests!</p>
+
+        <form id="explain-form">
+            <div class="form-group">
+                <label for="abilities">What are you good at? (e.g., math, drawing, problem-solving)</label>
+                <textarea id="abilities" name="abilities" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="likes">What do you like doing? (e.g., playing video games, hiking, cooking)</label>
+                <textarea id="likes" name="likes" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="language">Select Language:</label>
+                <select id="language" name="language">
+                    <option value="English" selected>English</option>
+                    <option value="Turkish">Turkish</option>
+                    <option value="French">French</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="German">German</option>
+                </select>
+            </div>
+
+            <div class="form-group main-topic">
+                <label for="topic">What topic do you want to learn about?</label>
+                <input type="text" id="topic" name="topic" required>
+            </div>
+
+            <button type="submit" id="submit-button">Explain It!</button>
+        </form>
+
+        <div id="loading" class="hidden">
+            <p>🧠 Thinking...</p>
+            <div class="spinner"></div>
+        </div>
+
+        <div id="error-message" class="error hidden"></div>
+
+        <h2>Explanation:</h2>
+        <div id="explanation-output">
+            <p>Your tailored explanation will appear here.</p>
+        </div>
+    </div>
+
+    <!-- Load JavaScript at the end -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
